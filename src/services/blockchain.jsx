@@ -202,7 +202,7 @@ const structuredQuestion = (questions) =>
       prize: fromWei(question.prize),
       tags: question.tags,
       paidout: question.paidout,
-      winner: question.winner,
+      winner: question.winner.toLowerCase(),
       refunded: question.refunded,
     }))
     .reverse()

@@ -95,7 +95,8 @@ const Comment = ({ comment, question }) => {
           ) : null}
           {connectedAccount == question.owner && !question.paidout ? (
             <button
-              className="flex justify-center items-center px-2 py-1 rounded bg-green-700 text-white
+              className="flex justify-center items-center px-2 py-1 rounded border
+              border-orange-500 text-orange-500
                 font-medium text-xs align-center w-max cursor-pointer
                 transition duration-300 ease space-x-1"
               onClick={handlePayment}
@@ -103,6 +104,17 @@ const Comment = ({ comment, question }) => {
               <FaEthereum className="text-xs cursor-pointer" />
               <span>Pay Now</span>
             </button>
+          ) : null}
+          {question.paidout && comment.owner == question.winner ? (
+            <span
+              className="flex justify-center items-center px-2 py-1 rounded border
+              border-orange-500 text-orange-500
+                font-medium text-xs align-center w-max 
+                transition duration-300 ease space-x-1"
+            >
+              <FaEthereum className="text-xs cursor-pointer" />
+              <span>Winner</span>
+            </span>
           ) : null}
         </div>
 
