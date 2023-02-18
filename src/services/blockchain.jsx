@@ -5,6 +5,8 @@ import { ethers } from 'ethers'
 import { logOutWithCometChat } from './Chat'
 
 const toWei = (num) => ethers.utils.parseEther(num.toString())
+const fromWei = (num) => ethers.utils.formatEther(num)
+
 const { ethereum } = window
 const contractAddress = address.address
 const contractAbi = abi.abi
@@ -62,12 +64,14 @@ const connectWallet = async () => {
   }
 }
 
-const createQuestion = async ({ title, question, tags }) => {
+const createQuestion = async ({ title, question, tags, prize }) => {
   try {
     if (!ethereum) return alert('Please install metamask')
     const contract = await getEthereumContract()
 
-    tx = await contract.addQuestion(title, question, tags)
+    tx = await contract.addQuestion(title, question, tags, {
+      value: toWei(prize),
+    })
     tx.wait()
 
     await getQuestions()
@@ -195,7 +199,11 @@ const structuredQuestion = (questions) =>
       createdAt: Number(question.created + '000'),
       updated: Number(question.updated + '000'),
       answers: question.answers.toNumber(),
+      prize: fromWei(question.prize),
       tags: question.tags,
+      paidout: question.paidout,
+      winner: question.winner,
+      refunded: question.refunded,
     }))
     .reverse()
 
@@ -212,25 +220,21 @@ const structuredComment = (comments) =>
     }))
     .reverse()
 
-const payWinner = async ({ questionId, commentId, amount }) => {
+const payWinner = async (questionId, commentId) => {
   try {
     if (!ethereum) return alert('Please install metamask')
 
     const contract = await getEthereumContract()
-    const account = getGlobalState('connectedAccount')
-    amount = toWei(amount)
+    const connectedAccount = getGlobalState('connectedAccount')
 
-    tx = await contract.payBestComment(
-      questionId,
-      commentId,
-      amount,
-
-      {
-        from: account,
-        value: amount._hex,
-      },
-    )
+    tx = await contract.payBestComment(questionId, commentId, {
+      from: connectedAccount,
+    })
     tx.wait()
+
+    await getComments(questionId)
+    await getQuestion(questionId)
+    await getQuestions()
   } catch (err) {
     reportError(err)
   }

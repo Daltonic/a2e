@@ -8,11 +8,15 @@ contract AnswerToEarn {
         string questionTitle;
         string questionDescription;
         address owner;
+        address winner;
+        bool paidout;
+        bool refunded;
         bool deleted;
         uint updated;
         uint created;
         uint answers;
         string tags;
+        uint256 prize;
     }
 
     struct CommentStruct {
@@ -38,6 +42,7 @@ contract AnswerToEarn {
     }
 
     address public owner;
+    uint256 public platformCharge = 5;
     uint public totalQuestion;
 
     mapping(uint => bool) questionExists;
@@ -49,16 +54,15 @@ contract AnswerToEarn {
         owner = msg.sender;
     }
 
-
-
     function addQuestion(
         string memory questionTitle,
         string memory questionDescription,
         string memory tags
-    ) public returns(bool) {
+    ) public payable {
         require(bytes(questionTitle).length > 0,"Fill up empty fields");
         require(bytes(questionDescription).length > 0,"Fill up empty fields");
         require(bytes(tags).length > 0,"Fill up empty fields");
+        require(msg.value > 0 ether, "Insufficient fund");
 
         QuestionStruct memory question;
         questionExists[questions.length] = true;
@@ -68,6 +72,7 @@ contract AnswerToEarn {
         question.questionTitle = questionTitle;
         question.questionDescription = questionDescription;
         question.tags = tags;
+        question.prize = msg.value;
         question.owner = msg.sender;
         question.updated = block.timestamp;
         question.created = block.timestamp;
@@ -80,8 +85,6 @@ contract AnswerToEarn {
             msg.sender,
             block.timestamp
        );
-
-        return true;
     }
 
     function updateQuestion(
@@ -236,34 +239,41 @@ contract AnswerToEarn {
         return msg.sender == commentsOf[questionId][id].owner;
     }
 
-    function payBestComment(
-        uint questionId,
-        uint id,
-        uint amount
-    ) public payable returns (bool) {
-        require(msg.value >= amount, "Insufficient fund!");
+    function payBestComment(uint questionId, uint id) public {
         require(questionExists[questionId], "Question not found");
+        require(!questions[questionId].paidout, "Question already paid out");
         require(msg.sender == questions[questionId].owner, "Unauthorized entity");
+
+        uint256 reward = questions[questionId].prize;
+        uint256 tax = reward * platformCharge / 100;
+        address winner = commentsOf[questionId][id].owner;
+        questions[questionId].paidout = true;
+        questions[questionId].winner = winner;
         
-       payTo(commentsOf[questionId][id].owner, amount);
-       return true;
+        payTo(winner, reward - tax);
+        payTo(owner, tax);
     }
 
-    // function payBestComment(uint questionId, uint id, uint amount) public payable returns (bool) {
-    // require(msg.value >= amount, "Insufficient fund!");
-    // require(questionExists[questionId], " not found");
-    // require(msg.sender == questions[questionId].owner, "Unauthorized entity");
+    function refund(uint questionId) public {
+        require(questionExists[questionId], "Question not found");
+        require(!questions[questionId].paidout, "Question already paid out");
+        require(!questions[questionId].refunded, "Owner already refunded");
+        require(msg.sender == questions[questionId].owner, "Unauthorized entity");
 
-    // address to = commentsOf[questionId][id].owner;
-    // payable(to).transfer(amount);
-
-    // return true;
-
-
-
+        uint256 reward = questions[questionId].prize;
+        questions[questionId].refunded = true;
+        
+        payTo(questions[questionId].owner, reward);
+    }
 
     function payTo(address to, uint amount) internal {
         (bool success, ) = payable(to).call{value: amount}("");
         require(success);
+    }
+
+    function changeFee(uint256 fee) public {
+        require(msg.sender == owner, "Unauthorized entity");
+        require(fee > 0 && fee <= 100, "Fee must be between 1 - 100");
+        platformCharge = fee;
     }
 }

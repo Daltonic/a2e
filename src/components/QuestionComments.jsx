@@ -1,9 +1,10 @@
 import { FaEthereum, FaPenAlt, FaTrashAlt } from 'react-icons/fa'
 import Identicon from 'react-identicons'
 import { setGlobalState, useGlobalState, truncate } from '../store'
-import { getComments } from '../services/blockchain.jsx'
+import { getComments, payWinner } from '../services/blockchain.jsx'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const QuestionComments = () => {
   const [comments] = useGlobalState('comments')
@@ -13,10 +14,7 @@ const QuestionComments = () => {
   const { id } = useParams()
 
   useEffect(async () => {
-    const questionId = id
-    await getComments(questionId).then(async () => {
-      setLoaded(true)
-    })
+    await getComments(id).then(() => setLoaded(true))
   }, [])
 
   return loaded ? (
@@ -41,9 +39,19 @@ const Comment = ({ comment, question }) => {
     setGlobalState('comment', comment)
     setGlobalState('deleteCommentModal', 'scale-100')
   }
-  const handlePayment = () => {
-    setGlobalState('comment', comment)
-    setGlobalState('paymentModal', 'scale-100')
+  const handlePayment = async () => {
+    await toast.promise(
+      new Promise(async (resolve, reject) => {
+        await payWinner(question.id, comment.id)
+          .then(async () => resolve())
+          .catch(() => reject())
+      }),
+      {
+        pending: 'Approve transaction...',
+        success: 'Winner payed out 👌',
+        error: 'Encountered error 🤯',
+      },
+    )
   }
 
   const formatTimestamp = (timestamp) => {
@@ -85,7 +93,7 @@ const Comment = ({ comment, question }) => {
               </button>
             </>
           ) : null}
-          {connectedAccount == question.owner ? (
+          {connectedAccount == question.owner && !question.paidout ? (
             <button
               className="flex justify-center items-center px-2 py-1 rounded bg-green-700 text-white
                 font-medium text-xs align-center w-max cursor-pointer

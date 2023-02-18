@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/daltonic/Sites/a2e/src/contracts/AnswerToEarn.sol": {
-      "lastModificationDate": 1676560858088,
-      "contentHash": "a034b42c28f2248b152410e4882b5c38",
+      "lastModificationDate": 1676738395682,
+      "contentHash": "f173ef2ccd7fe4d19d19ff3ca46349f2",
       "sourceName": "src/contracts/AnswerToEarn.sol",
       "solcConfig": {
         "version": "0.8.11",

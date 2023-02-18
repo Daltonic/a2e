@@ -9,14 +9,15 @@ const AddQuestion = () => {
   const [question, setQuestion] = useState('')
   const [title, setTitle] = useState('')
   const [tags, setTags] = useState('')
+  const [prize, setPrize] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (title == '' || question == '' || tags == '') return
+    if (title == '' || question == '' || tags == '' || prize == '') return
 
     await toast.promise(
       new Promise(async (resolve, reject) => {
-        await createQuestion({ title, question, tags })
+        await createQuestion({ title, question, tags, prize })
           .then(async () => {
             setGlobalState('addModal', 'scale-0')
             resetForm()
@@ -37,6 +38,7 @@ const AddQuestion = () => {
     setQuestion('')
     setTitle('')
     setTags('')
+    setPrize('')
   }
 
   return (
@@ -80,6 +82,20 @@ const AddQuestion = () => {
               placeholder="Question Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex flex-row justify-between items-center bg-gray-300 rounded-xl mt-5 p-2">
+            <input
+              className="block w-full text-sm text-slate-500 bg-transparent
+              border-0 focus:outline-none focus:ring-0"
+              type="number"
+              min={0.01}
+              step={0.01}
+              name="prize"
+              placeholder="ETH e.g 1.3"
+              value={prize}
+              onChange={(e) => setPrize(e.target.value)}
               required
             />
           </div>

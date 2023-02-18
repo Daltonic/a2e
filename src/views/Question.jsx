@@ -12,7 +12,6 @@ import { getGroup } from '../services/Chat'
 import ChatCommand from '../components/ChatCommand'
 import UpdateComment from '../components/UpdateComment'
 import DeleteComment from '../components/DeleteComment'
-import Payment from '../components/Payment'
 
 const Question = () => {
   const [question] = useGlobalState('question')
@@ -78,7 +77,6 @@ const Question = () => {
         <>
           <UpdateComment />
           <DeleteComment />
-          <Payment />
         </>
       ) : null}
 
