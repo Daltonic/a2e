@@ -80,7 +80,7 @@ const Question = () => {
         </>
       ) : null}
 
-      <AuthChat question={question} status={group?.hasJoined} />
+      <AuthChat />
       <ChatCommand question={question} />
       <ChatModal />
     </div>

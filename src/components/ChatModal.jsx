@@ -1,60 +1,48 @@
-import React from "react";
-import { FaTimes } from "react-icons/fa";
-import { setGlobalState, useGlobalState } from "../store";
-import Identicon from "react-identicons";
-import { truncate } from "../store";
-import { getMessages, sendMessage, listenForMessage } from "../services/Chat";
-import { useParams } from "react-router-dom";
-import { useState,useEffect } from "react";
-import {toast} from 'react-toastify'
+import { FaTimes } from 'react-icons/fa'
+import { setGlobalState, useGlobalState } from '../store'
+import Identicon from 'react-identicons'
+import { truncate } from '../store'
+import { getMessages, sendMessage, listenForMessage } from '../services/Chat'
+import { useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 
 const ChatModal = () => {
-  const [chatModal] = useGlobalState("chatModal");
-  const { id } = useParams();
-  const [message, setMessage] = useState("");
-  const [messages] = useGlobalState("messages")
+  const [chatModal] = useGlobalState('chatModal')
+  const { id } = useParams()
+  const [message, setMessage] = useState('')
+  const [messages] = useGlobalState('messages')
 
   const onSendMessage = async (e) => {
-    e.preventDefault();
-    if (!message) return;
-    
-    await toast.promise(
-      new Promise(async (resolve, reject) => {
-        await sendMessage(`guid_${id}`, message)
-          .then((msg) => {
-            setGlobalState("messages", (prevMessages) => [
-              ...prevMessages,
-              msg,
-            ]);
-            resolve();
-            setMessage("");
-          })
-          .catch(() => reject());
-      }),
-      {
-        pending: "sending message...",
-        success: "message sent successfully 👌",
-        error: "Encountered error 🤯",
-      }
-    )
+    e.preventDefault()
+    if (!message) return
+
+    new Promise(async (resolve, reject) => {
+      await sendMessage(`guid_${id}`, message)
+        .then((msg) => {
+          setGlobalState('messages', (prevMessages) => [...prevMessages, msg])
+          setMessage('')
+          resolve(msg)
+        })
+        .catch(() => reject())
+    })
   }
 
-  useEffect(async ()=> {
-    await getMessages(`guid_${id}`).then((msgs)=>{
-      if(msgs.length > 0) {
-        setGlobalState("messages",msgs)
-      }else {
+  useEffect(async () => {
+    await getMessages(`guid_${id}`).then((msgs) => {
+      if (msgs.length > 0) {
+        setGlobalState('messages', msgs)
+      } else {
         console.log('empty')
       }
     })
     await listenForMessage(`guid_${id}`).then((msg) => {
-      setGlobalState("messages", (prevMessages) => [...prevMessages, msg]);
-    });
-  },[])
+      setGlobalState('messages', (prevMessages) => [...prevMessages, msg])
+    })
+  }, [])
 
   const handleClose = () => {
-    setGlobalState("chatModal", "scale-0");
-  };
+    setGlobalState('chatModal', 'scale-0')
+  }
 
   return (
     <div
@@ -68,13 +56,13 @@ const ChatModal = () => {
 
         <div className="overflow-y-scroll overflow-x-hidden h-[20rem] scroll-bar mt-5 px-4 py-3">
           <div className="w-11/12">
-            {
-              messages.length > 0 
-              ? messages.map((msg,i) => (
-                <Message message={msg.text} uid={msg.sender.uid} key={i}/>
+            {messages.length > 0 ? (
+              messages.map((msg, i) => (
+                <Message message={msg.text} uid={msg.sender.uid} key={i} />
               ))
-              : <div> Leave a comment </div>
-            }
+            ) : (
+              <div> Leave a comment </div>
+            )}
           </div>
         </div>
 
@@ -92,29 +80,22 @@ const ChatModal = () => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-const Message = ({message, uid}) => {
-  return(
+const Message = ({ message, uid }) => {
+  return (
     <div className="flex items-center space-x-4 mb-1">
       <div className="flex items-center space-x-2">
-        <Identicon
-          string={uid}
-          size={15}
-          className="rounded-full"
-        />
-        <p className="font-bold text-sm">
-          {truncate(uid, 4, 4, 11)}
-        </p>
+        <Identicon string={uid} size={15} className="rounded-full" />
+        <p className="font-bold text-sm">{truncate(uid, 4, 4, 11)}</p>
       </div>
       <p className="text-sm">{message}</p>
     </div>
   )
 }
 
-export default ChatModal;
-
+export default ChatModal
 
 {
   /* salt page unable inject planet clap blame legend wild blade wine casual */

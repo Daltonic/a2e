@@ -1,61 +1,54 @@
-import { useEffect, useState } from "react";
-import { FaTimes } from "react-icons/fa";
-import { setGlobalState, useGlobalState } from "../store";
-import { joinGroup, createNewGroup, getMessages } from "../services/Chat";
-import { toast } from "react-toastify";
+import { FaTimes } from 'react-icons/fa'
+import { setGlobalState, useGlobalState } from '../store'
+import { joinGroup, createNewGroup } from '../services/Chat'
+import { toast } from 'react-toastify'
 
 const ChatCommand = ({ question }) => {
-  const [chatCommandModal] = useGlobalState("chatCommandModal");
-  const [connectedAccount] = useGlobalState("connectedAccount");
+  const [chatCommandModal] = useGlobalState('chatCommandModal')
+  const [connectedAccount] = useGlobalState('connectedAccount')
 
   const handleClose = () => {
-    setGlobalState("chatCommandModal", "scale-0");
-  };
+    setGlobalState('chatCommandModal', 'scale-0')
+  }
 
   const handleCreateGroup = async () => {
     await toast.promise(
       new Promise(async (resolve, reject) => {
         await createNewGroup(`guid_${question.id}`, question.title)
           .then((group) => {
-            setGlobalState("group", group);
-            resolve();
-            handleClose();
-            setGlobalState("chatModal", "scale-100");
+            setGlobalState('group', group)
+            resolve()
+            handleClose()
+            setGlobalState('chatModal', 'scale-100')
           })
-          .catch(() => reject());
+          .catch(() => reject())
       }),
       {
-        pending: "creating group...",
-        success: "group created successfully 👌",
-        error: "Encountered error 🤯",
-      }
-    );
-  };
-
-  const retrieveMessages = async () => {
-    await getMessages(`guid_${question.id}`).then((msgs) => {
-      setGlobalState("messages", msgs);
-    });
-  };
+        pending: 'Creating group...',
+        success: 'Group created successfully 👌',
+        error: 'Encountered error 🤯',
+      },
+    )
+  }
 
   const handleJoinGroup = async () => {
     new Promise(async (resolve, reject) => {
       await joinGroup(`guid_${question.id}`)
-        .then( async (group) => {
-          setGlobalState("group", group);
-          handleClose();
-          await retrieveMessages()
-          setGlobalState("chatModal", "scale-100");
-          resolve();
+        .then(async (group) => {
+          setGlobalState('group', group)
+          handleClose()
+          setGlobalState('chatModal', 'scale-100')
+          resolve()
+          window.location.reload()
         })
-        .catch(() => reject());
+        .catch(() => reject())
     }),
       {
-        pending: "joining group...",
-        success: "joined successfully 👌",
-        error: "Encountered error 🤯",
-      };
-  };
+        pending: 'joining group...',
+        success: 'joined successfully 👌',
+        error: 'Encountered error 🤯',
+      }
+  }
 
   return (
     <div
@@ -86,7 +79,7 @@ const ChatCommand = ({ question }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ChatCommand;
+export default ChatCommand
