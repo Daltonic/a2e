@@ -1,58 +1,59 @@
-import { FaGithub, FaTimes } from "react-icons/fa";
-import { setGlobalState, useGlobalState } from "../store";
-import { useEffect, useState } from "react";
-import { editComment, getComments } from "../services/blockchain.jsx";
-import { toast } from "react-toastify";
+import { FaGithub, FaTimes } from 'react-icons/fa'
+import { setGlobalState, useGlobalState } from '../store'
+import { useEffect, useState } from 'react'
+import { editComment, getComments } from '../services/blockchain.jsx'
+import { toast } from 'react-toastify'
 
 const UpdateComment = () => {
-  const [updateModal] = useGlobalState("updateModal");
-  const [comment] = useGlobalState("comment");
-  const [commentText, setCommentText] = useState("");
+  const [updateCommentModal] = useGlobalState('updateCommentModal')
+  const [comment] = useGlobalState('comment')
+  const [commentText, setCommentText] = useState('')
 
   const onClose = () => {
-    setGlobalState("updateModal", "scale-0");
-    setCommentText("");
-    setGlobalState("comment", null);
-  };
+    setGlobalState('updateCommentModal', 'scale-0')
+    setCommentText('')
+    setGlobalState('comment', null)
+  }
 
   useEffect(() => {
     if (comment) {
-      setCommentText(comment.commentText);
+      setCommentText(comment.commentText)
     }
-  }, [comment]);
+  }, [comment])
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (commentText == "") return;
+    e.preventDefault()
+    if (commentText == '') return
     const params = {
       questionId: comment.questionId,
       commentId: comment.id,
       commentText,
-    };
+    }
 
     await toast.promise(
       new Promise(async (resolve, reject) => {
         await editComment(params)
           .then(async () => {
-            setGlobalState("updateModal", "scale-0");
-            getComments(comment.questionId);
-            setCommentText("");
-            onClose();
-            resolve();
+            setGlobalState('updateCommentModal', 'scale-0')
+            getComments(comment.questionId)
+            setCommentText('')
+            onClose()
+            resolve()
           })
-          .catch(() => reject());
+          .catch(() => reject())
       }),
       {
-        pending: "Approve transaction...",
-        success: "comment updated successfully 👌",
-        error: "Encountered error 🤯",
-      }
-    );
-  };
+        pending: 'Approve transaction...',
+        success: 'comment updated successfully 👌',
+        error: 'Encountered error 🤯',
+      },
+    )
+  }
 
   return (
     <div
-      className={`fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-50 transform z-50 transition-transform duration-300 ${updateModal}`}
+      className={`fixed top-0 left-0 w-screen h-screen flex items-center justify-center
+      bg-black bg-opacity-50 transform z-50 transition-transform duration-300 ${updateCommentModal}`}
     >
       <div className="bg-white shadow-lg shadow-slate-900 rounded-xl w-11/12 md:w-2/5 h-7/12 p-6">
         <form onSubmit={handleSubmit} className="flex flex-col">
@@ -69,7 +70,7 @@ const UpdateComment = () => {
           <div className="flex flex-col justify-center items-center rounded-xl mt-5 mb-5">
             <div className="flex justify-center items-center rounded-full overflow-hidden h-10 w-40 shadow-md shadow-slate-300 p-4">
               <p className="text-lg font-bold text-slate-700">
-                {" "}
+                {' '}
                 A<b className="text-orange-500">2</b>E
               </p>
             </div>
@@ -95,6 +96,6 @@ const UpdateComment = () => {
         </form>
       </div>
     </div>
-  );
-};
-export default UpdateComment;
+  )
+}
+export default UpdateComment

@@ -8,6 +8,7 @@ const {setGlobalState, useGlobalState, getGlobalState} = createGlobalState({
     addComment: "scale-0",
     deleteQuestionModal: "scale-0",
     deleteCommentModal: "scale-0",
+    updateCommentModal: "scale-0",
     chatModal:'scale-0',
     chatCommandModal:'scale-0',
     authChatModal:'scale-0',

@@ -4,9 +4,9 @@ const QuestionTitle = ({ title, caption }) => {
   return (
     <div
       className="w-full flex justify-between items-center space-x-2
-    border-b-2 border-gray-300 border-b-gray-300 pb-4"
+    border-b border-gray-300 border-b-gray-300 pb-4"
     >
-      <div>
+      <div className='flex flex-col flex-wrap w-5/6'>
         <h1 className="sm:text-3xl md:2xl text-xl font-medium">{title}</h1>
         <p className="text-md mt-2">{caption}</p>
       </div>

@@ -10,10 +10,14 @@ import AuthChat from '../components/AuthChat'
 import AddComment from '../components/AddComment'
 import { getGroup } from '../services/Chat'
 import ChatCommand from '../components/ChatCommand'
+import UpdateComment from '../components/UpdateComment'
+import DeleteComment from '../components/DeleteComment'
+import Payment from '../components/Payment'
 
 const Question = () => {
   const [question] = useGlobalState('question')
   const [group] = useGlobalState('group')
+  const [comment] = useGlobalState('comment')
   const [currentUser] = useGlobalState('currentUser')
   const [loaded, setLoaded] = useState(false)
   const [isOnline, setIsOnline] = useState(false)
@@ -47,10 +51,13 @@ const Question = () => {
       />
 
       <div className="my-4">
-        <QuestionSingle editable question={question} />
+        <QuestionSingle
+          editable={question.owner == connectedAccount}
+          question={question}
+        />
       </div>
 
-      <div className="flex space-x-5">
+      <div className="flex space-x-5 border-b border-b-gray-300 pb-4">
         <button
           className="mt-5 text-blue-500 focus:outline-none focus:ring-0"
           onClick={() => setGlobalState('addComment', 'scale-100')}
@@ -67,6 +74,13 @@ const Question = () => {
 
       <AddComment />
       <QuestionComments />
+      {comment ? (
+        <>
+          <UpdateComment />
+          <DeleteComment />
+          <Payment />
+        </>
+      ) : null}
 
       <AuthChat question={question} status={group?.hasJoined} />
       <ChatCommand question={question} />
