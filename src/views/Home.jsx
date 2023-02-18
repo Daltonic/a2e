@@ -1,30 +1,37 @@
-import React from "react";
-import QuestionDescription from "../components/QuestionDescription";
-import QuestionTitle from "../components/QuestionTitle";
-import { useState,useEffect } from "react";
-import { useGlobalState } from "../store";
-import { getQuestions } from "../services/blockchain";
+import QuestionTitle from '../components/QuestionTitle'
+import { useState, useEffect } from 'react'
+import { useGlobalState } from '../store'
+import { getQuestions } from '../services/blockchain'
+import QuestionSingle from '../components/QuestionSingle'
 
 const QuestionPage = () => {
-  const [loaded,setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const [questions] = useGlobalState('questions')
 
   useEffect(async () => {
-    await getQuestions().then(()=> {
+    await getQuestions().then(() => {
       setLoaded(true)
     })
-    
-  }, []);
+  }, [])
 
   return loaded ? (
-    <div className="w-4/5 mx-auto">
-      <QuestionTitle title={"Ask Questions"} caption={`${questions.length > 1?questions.length+'questions':questions.length+' question'}`} />
-      
-      
+    <div className="sm:px-20 px-5 my-4">
+      <QuestionTitle
+        title={'Ask Questions'}
+        caption={`${
+          questions.length > 1
+            ? questions.length + ' Questions'
+            : questions.length + ' Question'
+        }`}
+      />
 
-      <QuestionDescription questions={questions}/>
+      <div className="my-4">
+        {questions.map((question, i) => (
+          <QuestionSingle question={question} titled key={i} />
+        ))}
+      </div>
     </div>
-  ) : null;
-};
+  ) : null
+}
 
-export default QuestionPage;
+export default QuestionPage

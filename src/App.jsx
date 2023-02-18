@@ -1,28 +1,30 @@
-import { Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Home from "./views/Home";
-import Question from "./views/Question";
-import AddQuestion from "./components/AddQuestion";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { setGlobalState, useGlobalState } from "./store";
-import { WalletConnectedStatus } from "./services/blockchain";
-import {checkAuthState} from './services/Chat'
-import { useEffect, useState } from "react";
+import { Routes, Route } from 'react-router-dom'
+import Header from './components/Header'
+import Home from './views/Home'
+import Question from './views/Question'
+import AddQuestion from './components/AddQuestion'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { setGlobalState, useGlobalState } from './store'
+import { WalletConnectedStatus } from './services/blockchain'
+import { checkAuthState } from './services/Chat'
+import { useEffect, useState } from 'react'
+import UpdateQuestion from './components/UpdateQuestion'
+import DeleteQuestion from './components/DeleteQuestion'
 
 const App = () => {
-  const [loaded, setLoaded] = useState(false);
-  const [connectedAccount] = useGlobalState("connectedAccount");
+  const [loaded, setLoaded] = useState(false)
+  const [connectedAccount] = useGlobalState('connectedAccount')
 
   useEffect(async () => {
     await WalletConnectedStatus().then(async () => {
-      console.log("Blockchain Loaded");
-      await checkAuthState().then((user)=>{
-        setGlobalState('currentUser',user)
+      console.log('Blockchain Loaded')
+      await checkAuthState().then((user) => {
+        setGlobalState('currentUser', user)
       })
-      setLoaded(true);
-    });
-  }, []);
+      setLoaded(true)
+    })
+  }, [])
 
   return (
     <div className="min-h-screen">
@@ -30,10 +32,13 @@ const App = () => {
 
       {loaded ? (
         <Routes>
-          <Route path={"/"} element={<Home />} />
-          <Route path={"/question/:id"} element={<Question />} />
+          <Route path={'/'} element={<Home />} />
+          <Route path={'/question/:id'} element={<Question />} />
         </Routes>
       ) : null}
+
+      <UpdateQuestion />
+      <DeleteQuestion />
 
       {connectedAccount ? <AddQuestion /> : null}
       <ToastContainer
@@ -49,7 +54,7 @@ const App = () => {
         theme="dark"
       />
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

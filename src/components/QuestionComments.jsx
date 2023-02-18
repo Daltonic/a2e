@@ -1,58 +1,50 @@
-import { FaPenAlt, FaTrashAlt } from "react-icons/fa";
-import Identicon from "react-identicons";
-import { setGlobalState, useGlobalState, truncate } from "../store";
-import UpdateComment from "./UpdateComment";
-import { getComments } from "../services/blockchain.jsx";
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import DeleteComment from "./DeleteComment";
-import { toast } from "react-toastify";
-import Payment from "./Payment";
-
+import { FaPenAlt, FaTrashAlt } from 'react-icons/fa'
+import Identicon from 'react-identicons'
+import { setGlobalState, useGlobalState, truncate } from '../store'
+import UpdateComment from './UpdateComment'
+import { getComments } from '../services/blockchain.jsx'
+import { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import DeleteComment from './DeleteComment'
+import Payment from './Payment'
 
 const QuestionComments = () => {
-  const notify = () => toast("Wow so easy!");
-  const [comments] = useGlobalState("comments");
-  const [comment] = useGlobalState("comment");
-  const [chatModal] = useGlobalState("chatModal");
-  const [loaded, setLoaded] = useState(false);
+  const [comments] = useGlobalState('comments')
+  const [loaded, setLoaded] = useState(false)
 
-  const { id } = useParams();
-
-  
+  const { id } = useParams()
 
   useEffect(async () => {
-    const questionId = id;
+    const questionId = id
     await getComments(questionId).then(async () => {
-      setLoaded(true);
-    });
-    
-  }, []);
+      setLoaded(true)
+    })
+  }, [])
 
   return loaded ? (
-    <div className="my-4 border-t-2 border-gray-300 border-t-gray-300 pt-5 w-11/12 mx-auto">
+    <div className="my-4 border-t-2 border-gray-300 border-t-gray-300">
       {comments.map((comment, index) =>
-        !comment.deleted ? <Comment comment={comment} key={index} /> : null
+        !comment.deleted ? <Comment comment={comment} key={index} /> : null,
       )}
     </div>
-  ) : null;
-};
-export default QuestionComments;
+  ) : null
+}
+export default QuestionComments
 
 const Comment = ({ comment }) => {
   const handleEdit = (comment) => {
-    setGlobalState("comment", comment);
-    setGlobalState("updateModal", "scale-100");
-  };
+    setGlobalState('comment', comment)
+    setGlobalState('updateModal', 'scale-100')
+  }
 
   const handleDelete = (comment) => {
-    setGlobalState("comment", comment);
-    setGlobalState("deleteCommentModal", "scale-100");
-  };
+    setGlobalState('comment', comment)
+    setGlobalState('deleteCommentModal', 'scale-100')
+  }
   const handlePayment = (comment) => {
-    setGlobalState("comment", comment);
-    setGlobalState("paymentModal", "scale-100");
-  };
+    setGlobalState('comment', comment)
+    setGlobalState('paymentModal', 'scale-100')
+  }
 
   return (
     <div className="">
@@ -82,8 +74,8 @@ const Comment = ({ comment }) => {
 
       <p className="text-slate-500 text-sm font-lg">16, feb 2022</p>
     </div>
-  );
-};
+  )
+}
 /*import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
