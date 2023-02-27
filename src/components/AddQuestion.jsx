@@ -90,8 +90,8 @@ const AddQuestion = () => {
               className="block w-full text-sm text-slate-500 bg-transparent
               border-0 focus:outline-none focus:ring-0"
               type="number"
-              min={0.01}
-              step={0.01}
+              min={0.0001}
+              step={0.0001}
               name="prize"
               placeholder="ETH e.g 1.3"
               value={prize}

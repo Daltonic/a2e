@@ -21,6 +21,7 @@ const ChatModal = () => {
         .then((msg) => {
           setGlobalState('messages', (prevMessages) => [...prevMessages, msg])
           setMessage('')
+          scrollToEnd()
           resolve(msg)
         })
         .catch(() => reject())
@@ -34,14 +35,21 @@ const ChatModal = () => {
       } else {
         console.log('empty')
       }
+      scrollToEnd()
     })
     await listenForMessage(`guid_${id}`).then((msg) => {
       setGlobalState('messages', (prevMessages) => [...prevMessages, msg])
+      scrollToEnd()
     })
   }, [])
 
   const handleClose = () => {
     setGlobalState('chatModal', 'scale-0')
+  }
+
+  const scrollToEnd = () => {
+    const elmnt = document.getElementById('messages-container')
+    elmnt.scrollTop = elmnt.scrollHeight
   }
 
   return (
@@ -54,7 +62,7 @@ const ChatModal = () => {
           <FaTimes className="cursor-pointer" onClick={handleClose} />
         </div>
 
-        <div className="overflow-y-scroll overflow-x-hidden h-[20rem] scroll-bar mt-5 px-4 py-3">
+        <div id="messages-container"  className="overflow-y-scroll overflow-x-hidden h-[20rem] scroll-bar mt-5 px-4 py-3">
           <div className="w-11/12">
             {messages.length > 0 ? (
               messages.map((msg, i) => (

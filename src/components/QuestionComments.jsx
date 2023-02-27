@@ -1,7 +1,7 @@
 import { FaEthereum, FaPenAlt, FaTrashAlt } from 'react-icons/fa'
 import Identicon from 'react-identicons'
 import { setGlobalState, useGlobalState, truncate } from '../store'
-import { getComments, payWinner } from '../services/blockchain.jsx'
+import { getComments, getQuestion, payWinner } from '../services/blockchain.jsx'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -43,7 +43,11 @@ const Comment = ({ comment, question }) => {
     await toast.promise(
       new Promise(async (resolve, reject) => {
         await payWinner(question.id, comment.id)
-          .then(async () => resolve())
+          .then(async () => {
+            await getComments(question.id)
+            await getQuestion(question.id)
+            resolve()
+          })
           .catch(() => reject())
       }),
       {
