@@ -72,7 +72,7 @@ const createQuestion = async ({ title, question, tags, prize }) => {
     tx = await contract.addQuestion(title, question, tags, {
       value: toWei(prize),
     })
-    tx.wait()
+    await tx.wait()
 
     await getQuestions()
   } catch (err) {
@@ -86,7 +86,7 @@ const editQuestion = async ({ id, title, question, tags }) => {
     const contract = await getEthereumContract()
 
     tx = await contract.updateQuestion(id, title, question, tags)
-    tx.wait()
+    await tx.wait()
 
     await getQuestions()
   } catch (err) {
@@ -100,7 +100,7 @@ const deleteQuestion = async (id) => {
     const contract = await getEthereumContract()
 
     tx = await contract.deleteQuestion(id)
-    tx.wait()
+    await tx.wait()
 
     await getQuestions()
   } catch (err) {
@@ -114,7 +114,7 @@ const createComment = async ({ questionId, commentText }) => {
     const contract = await getEthereumContract()
 
     tx = await contract.addComment(questionId, commentText)
-    tx.wait()
+    await tx.wait()
 
     await getComments(questionId)
     await getQuestion(questionId)
@@ -130,7 +130,7 @@ const editComment = async ({ questionId, commentId, commentText }) => {
     const contract = await getEthereumContract()
 
     tx = await contract.updateComment(questionId, commentId, commentText)
-    tx.wait()
+    await tx.wait()
     await getComments(questionId)
   } catch (err) {
     reportError(err)
@@ -230,7 +230,7 @@ const payWinner = async (questionId, commentId) => {
     tx = await contract.payBestComment(questionId, commentId, {
       from: connectedAccount,
     })
-    tx.wait()
+    await tx.wait()
 
     await getComments(questionId)
     await getQuestion(questionId)
