@@ -1,5 +1,5 @@
 import abi from '../abis/src/contracts/AnswerToEarn.sol/AnswerToEarn.json'
-import address from '../abis/contractAddress.json'
+import address from '../contracts/contractAddress.json'
 import { getGlobalState, setGlobalState } from '../store'
 import { ethers } from 'ethers'
 import { logOutWithCometChat } from './Chat'
@@ -8,22 +8,17 @@ const toWei = (num) => ethers.utils.parseEther(num.toString())
 const fromWei = (num) => ethers.utils.formatEther(num)
 
 const { ethereum } = window
-const contractAddress = address.address
 const contractAbi = abi.abi
 let tx
 
 const getEthereumContract = async () => {
-  const connectedAccount = getGlobalState('connectedAccount')
+  const currentChainId = ethereum.networkVersion
+  const contractAddress = address[currentChainId]
+  const provider = new ethers.providers.Web3Provider(ethereum)
+  const signer = provider.getSigner()
+  const contracts = new ethers.Contract(contractAddress, contractAbi, signer)
 
-  if (connectedAccount) {
-    const provider = new ethers.providers.Web3Provider(ethereum)
-    const signer = provider.getSigner()
-    const contracts = new ethers.Contract(contractAddress, contractAbi, signer)
-
-    return contracts
-  } else {
-    return getGlobalState('contract')
-  }
+  return contracts
 }
 
 const WalletConnectedStatus = async () => {
